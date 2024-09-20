@@ -45,4 +45,6 @@ public class Driver extends User {
     }
 
 
+    public void receiveNotification(String message) {
+    }
 }

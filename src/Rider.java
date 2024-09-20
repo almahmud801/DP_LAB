@@ -1,6 +1,6 @@
 
 
- public class Rider extends User {
+public class Rider extends User {
     private PaymentMethod preferredPaymentMethod;
 
     public Rider(int id, String name, String location, double rating, PaymentMethod preferredPaymentMethod, NotificationService notificationService) {
@@ -8,11 +8,11 @@
         this.preferredPaymentMethod = preferredPaymentMethod;
     }
 
-     public Trip requestRide(String pickupLocation, String dropOffLocation, RideType rideType) {
-         Trip trip = new Trip(pickupLocation, dropOffLocation, rideType, this);
-         trip.assignDriver();
-         return trip;
-     }
+    public Trip requestRide(String pickupLocation, String dropOffLocation, RideType rideType) {
+        Trip trip = new Trip(pickupLocation, rideType, this);
+        trip.assignDriver();
+        return trip;
+    }
 
     public void rateDriver(Driver driver, double rating) {
         driver.updateRating(rating);
@@ -24,9 +24,12 @@
 
 
 
-     @Override
-     public void recieveNotification(String message) {
-            notificationService.sendNotification(this, message);
+    @Override
+    public void recieveNotification(String message) {
+        notificationService.sendNotification(this, message);
 
-     }
- }
+    }
+
+    public void receiveNotification(String message) {
+    }
+}

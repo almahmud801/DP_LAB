@@ -1,3 +1,4 @@
+
 public class Trip {
     private static int tripCounter = 0;
     private int id;
@@ -10,18 +11,36 @@ public class Trip {
     public Driver driver;
     public Rider rider;
     private NotificationService notificationService;
+    private boolean isOngoing;
 
-    public Trip(String pickupLocation, String dropOffLocation, RideType rideType, Rider rider) {
+    public Trip(String pickupLocation, RideType rideType, Rider rider) {
         this.id = ++tripCounter;
         this.pickupLocation = pickupLocation;
-        this.dropOffLocation = dropOffLocation;
         this.rideType = rideType;
         this.status = TripStatus.REQUESTED;
         this.rider = rider;
         this.fare = calculateFare();
-        this.distance = calculateDistance(); // Simplified, would use a mapping service in reality
+        this.distance = calculateDistance();
+        this.isOngoing = true;
         rider.recieveNotification("Ride requested successfully.");
     }
+
+    public void setDropOffLocation(String newDropOffLocation) {
+        if(this.isOngoing) {
+            this.dropOffLocation = newDropOffLocation;
+            this.distance = calculateDistance();
+            this.fare = calculateFare();
+
+            // Notify rider and driver of change
+            rider.receiveNotification("Drop-off location updated to: " + newDropOffLocation);
+            if (driver != null) {
+                driver.receiveNotification("Rider updated the drop-off location to: " + newDropOffLocation);
+            }
+        } else {
+            rider.receiveNotification("Drop-off location can't be changed");
+        }
+    }
+
     public double calculateFare() {
         double baseFare = rideType.getBaseFare();
         double distanceFare = distance * rideType.getPricePerKm();
@@ -30,14 +49,12 @@ public class Trip {
     }
 
     private double calculateDistance() {
-        // Simplified distance calculation
-        return 10.0; // Assume 10 km for all trips
+        return 10.0;
     }
 
     private double getTimeFactor() {
-        // Simplified time factor calculation
         int currentHour = java.time.LocalTime.now().getHour();
-        return (currentHour >= 22 || currentHour < 6) ? 1.5 : 1.0; // Higher rates for night rides
+        return (currentHour >= 22 || currentHour < 6) ? 1.5 : 1.0;
     }
 
     public void assignDriver() {
@@ -68,10 +85,3 @@ public class Trip {
         driver.setAvailability(true);
     }
 }
-
-
-
-
-
-
-
